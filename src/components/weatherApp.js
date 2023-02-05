@@ -43,7 +43,11 @@ export default function WeatherApp() {
     return (
         <div className={styles.weatherContainer}>
             <WeatherForm onChangeCity={handleOnChangeCity} />
-            {weather ? <WeatherMainInfo weather={weather} /> : <Loading />}
+            {
+                weather
+                    ? <WeatherMainInfo weather={weather} />
+                    : <Loading />
+            }
         </div>
     );
 }
