@@ -1,5 +1,9 @@
-import { useEffect, useState } from "react"
+import { useState, useEffect } from "react";
+import Loading from "./loading";
 import WeatherForm from "./weatherForm";
+import WeatherMainInfo from "./weatherMainInfo";
+
+import styles from "./weatherApp.module.css";
 
 export default function WeatherApp() {
     const [weather, setWeather] = useState(null);
@@ -9,33 +13,37 @@ export default function WeatherApp() {
     }, []);
 
     useEffect(() => {
-        document.title = `Weather | ${weather?.location.name ?? ""}`;
+        document.title = "Weather | " + weather?.location?.name ?? "";
     }, [weather]);
 
     async function loadInfo(city = "london") {
+        console.log(
+            `${process.env.REACT_APP_URL}&key=${process.env.REACT_APP_KEY}&q=${city}`
+        );
         try {
-            const request = await fetch(`${process.env.REACT_APP_URL}&key=${process.env.REACT_APP_KEY}&q=${city}`);
+            const request = await fetch(
+                `${process.env.REACT_APP_URL}&key=${process.env.REACT_APP_KEY}&q=${city}`
+            );
             const json = await request.json();
-            setWeather(json);
             console.log(json);
-        } catch (error) {
 
+            setTimeout(() => {
+                setWeather({ ...json });
+            }, 2000);
+        } catch (e) {
+            console.error(e);
         }
     }
 
-    function handleChangeCity(city) {
+    function handleOnChangeCity(city) {
         setWeather(null);
         loadInfo(city);
     }
 
     return (
-        <div>
-            <WeatherForm onChangeCity={handleChangeCity} />
-            <div>
-                {
-                    weather?.current.temp_c
-                }
-            </div>
+        <div className={styles.weatherContainer}>
+            <WeatherForm onChangeCity={handleOnChangeCity} />
+            {weather ? <WeatherMainInfo weather={weather} /> : <Loading />}
         </div>
-    )
+    );
 }
